@@ -1,4 +1,4 @@
-# ☕ Maven Basic Project Setup Guide
+# ☕ Maven Basic Project 
 
 ---
 
