@@ -11,6 +11,8 @@ pipeline {
         stage('Maven') {
             steps {
                 echo 'Building with Maven...'
+                sh 'java --version'
+                sh 'mvn --version'
                 sh 'mvn clean install'
                 sh 'mvn compile'
                 sh 'mvn package'
