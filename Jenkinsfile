@@ -2,32 +2,85 @@ pipeline {
     agent any
 
     stages {
-        stage('Git Checkout') {
+
+        stage('Checkout Source Code') {
             steps {
-                echo 'branch: main https://github.com/atulkamble/maven-basic-project.git'
+                echo 'Checking out source code from GitHub...'
+                echo 'Branch: main'
+                echo 'Repository: https://github.com/atulkamble/maven-basic-project.git'
             }
         }
 
-        stage('Maven') {
+        stage('Verify Java Installation') {
             steps {
-                echo 'Building with Maven...'
+                echo 'Verifying Java installation...'
                 sh 'java --version'
+            }
+        }
+
+        stage('Verify Maven Installation') {
+            steps {
+                echo 'Verifying Maven installation...'
                 sh 'mvn --version'
-                sh 'mvn clean install'
+            }
+        }
+
+        stage('Clean Project') {
+            steps {
+                echo 'Cleaning Maven project...'
+                sh 'mvn clean'
+            }
+        }
+
+        stage('Compile Source Code') {
+            steps {
+                echo 'Compiling source code...'
                 sh 'mvn compile'
+            }
+        }
+
+        stage('Run Unit Tests') {
+            steps {
+                echo 'Running Maven tests...'
+                sh 'mvn test'
+            }
+        }
+
+        stage('Package Application') {
+            steps {
+                echo 'Packaging application...'
                 sh 'mvn package'
+            }
+        }
+
+        stage('Install Artifacts') {
+            steps {
+                echo 'Installing artifacts to local Maven repository...'
+                sh 'mvn install'
+            }
+        }
+
+        stage('Execute Application') {
+            steps {
+                echo 'Running Java application...'
                 sh 'mvn exec:java -Dexec.mainClass="com.cloudnautic.App"'
             }
         }
     }
 
     post {
-        failure {
-            echo 'Build failed. Please check the logs for details.'
-        }
 
         success {
-            echo 'Maven build succeeded!'
+            echo 'Maven build and execution completed successfully!'
+        }
+
+        failure {
+            echo 'Build failed. Please check the Jenkins console logs.'
+        }
+
+        always {
+            echo 'Pipeline execution finished.'
         }
     }
 }
+
