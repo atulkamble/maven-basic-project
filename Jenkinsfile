@@ -14,7 +14,7 @@ pipeline {
                 sh 'mvn clean install'
                 sh 'mvn compile'
                 sh 'mvn package'
-                sh 'mvn exec:java -Dexec.mainClass="com.cloudnautic.App"'
+                // sh 'mvn exec:java -Dexec.mainClass="com.cloudnautic.App"'
             }
         }
     }
