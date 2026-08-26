@@ -1,22 +1,66 @@
-# Maven
-# Build your Java project and run tests with Apache Maven.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
-
 trigger:
-- main
+  - main
 
 pool:
   vmImage: ubuntu-latest
 
-steps:
-- task: Maven@3
-  inputs:
-    mavenPomFile: 'pom.xml'
-    mavenOptions: '-Xmx3072m'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.17'
-    jdkArchitectureOption: 'x64'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    goals: 'package'
+stages:
+
+  - stage: Maven_Clean
+    displayName: 'Maven Clean'
+    jobs:
+      - job: Clean
+        displayName: 'Clean Job'
+        continueOnError: false
+        timeoutInMinutes: 60
+        steps:
+          - script: mvn clean
+            displayName: 'Run Maven Clean'
+
+  - stage: Maven_Compile
+    displayName: 'Maven Compile'
+    dependsOn: Maven_Clean
+    jobs:
+      - job: Compile
+        displayName: 'Compile Job'
+        continueOnError: false
+        timeoutInMinutes: 60
+        steps:
+          - script: mvn compile
+            displayName: 'Run Maven Compile'
+
+  - stage: Maven_Test
+    displayName: 'Maven Test'
+    dependsOn: Maven_Compile
+    jobs:
+      - job: Test
+        displayName: 'Test Job'
+        continueOnError: false
+        timeoutInMinutes: 60
+        steps:
+          - script: mvn test
+            displayName: 'Run Maven Test'
+
+  - stage: Maven_Package
+    displayName: 'Maven Package'
+    dependsOn: Maven_Test
+    jobs:
+      - job: Package
+        displayName: 'Package Job'
+        continueOnError: false
+        timeoutInMinutes: 60
+        steps:
+          - script: mvn package
+            displayName: 'Run Maven Package'
+
+  - stage: Maven_Execute
+    displayName: 'Maven Execute'
+    dependsOn: Maven_Package
+    jobs:
+      - job: Execute
+        displayName: 'Execute Job'
+        continueOnError: false
+        timeoutInMinutes: 60
+        steps:
+          - script: mvn exec:java -Dexec.mainClass="com.cloudnautic.App"
+            displayName: 'Execute Java Application'
